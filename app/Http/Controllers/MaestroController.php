@@ -33,11 +33,11 @@ class MaestroController extends Controller
         $maestros = new Maestro();
 
         $request->validate([
-            'codigo'=>['required','unique:maestros,codigo','min:10','max:10','numeric','integer'],
+            'codigo'=>['required','unique:maestros,codigo','digits:10','numeric'],
             'nombre'=>['required','alpha_num:ascii'],
             'apellidopaterno'=>['required','alpha_num:ascii'],
             'apellidomaterno'=>['required','alpha_num:ascii'],
-            'NSS'=>['required','unique:maestros,NSS','min:12','max:12','numeric','integer'],
+            'NSS'=>['required','unique:maestros,NSS','min:12','digits:12','numeric'],
             'correo'=>['required','unique:maestros,correo','email:rfc,dns']
         ]);
 
@@ -64,7 +64,7 @@ class MaestroController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Maestro $maestro)
+    public function edit(string $id)
     {
         $maestro = Maestro::find($id);
         return view('maestro.edit',compact('maestro'));
@@ -73,18 +73,18 @@ class MaestroController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Maestro $maestro)
+    public function update(Request $request, string $id)
     {
 
         $maestro = Maestro::find($id);
 
         $request->validate([
-            'codigo'=>['required','unique:maestros,codigo','min:10','max:10','numeric','integer'],
+            'codigo'=>['required',Rule::unique('maestros','codigo')->ignore($id),'digits:10','numeric','integer'],
             'nombre'=>['required','alpha_num:ascii'],
             'apellidopaterno'=>['required','alpha_num:ascii'],
             'apellidomaterno'=>['required','alpha_num:ascii'],
-            'NSS'=>['required','unique:maestros,NSS','min:12','max:12','numeric','integer'],
-            'correo'=>['required',Rule::unique('estudiante','correo')->ignore($id),'email:rfc,dns']
+            'NSS'=>['required',Rule::unique('maestros','NSS')->ignore($id),'digits:12','numeric','integer'],
+            'correo'=>['required',Rule::unique('maestros','correo')->ignore($id),'email:rfc,dns']
         ]);
 
         $maestro->codigo = $request->get('codigo');
@@ -102,7 +102,7 @@ class MaestroController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Maestro $maestro)
+    public function destroy(string $id)
     {
         $maestro = Maestro::find($id);
         $maestro->delete();
